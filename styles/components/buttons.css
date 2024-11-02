@@ -1,0 +1,59 @@
+/* Botones de edición y carga */
+
+
+.edit-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.edit-buttons button {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.edit-buttons button:hover {
+    background: #0056b3;
+    transform: scale(1.05);
+}
+
+/* Botones de edición y carga */
+.edit-buttons {
+    display: flex;
+    gap: 10px;
+    padding-top: 10px;
+  }
+  
+  .edit-buttons button {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+  }
+  
+  .edit-buttons button:hover {
+    background: #0056b3;
+    transform: scale(1.05);
+  }
+
+  .confirm-btn, .cancel-btn {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+  }
+  
+  .confirm-btn:hover, .cancel-btn:hover {
+    background: #0056b3;
+    transform: scale(1.05);
+  }

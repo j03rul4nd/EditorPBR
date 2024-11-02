@@ -1,22 +1,268 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor de Texturas PBR</title>
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
-  </head>
-  <body>
-    <style>
-      body { margin: 0; overflow: hidden; }
-      canvas { display: block; }
-      #app{
-        position: absolute;
-        z-index: 2;
-      }
-  </style>
-    <div id="app"></div>
-    <script src="./dat.gui.js"></script>
-    <script type="module" src="/main.js"></script>
-  </body>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Main container wrapping the body content; defines the application area -->
+  <div class="container" role="main" aria-labelledby="main-title">
+      
+      <!-- Primary title of the application; serves as the main heading for screen readers and SEO -->
+      <h1 id="main-title" class="title">Editor y Visualizador de Texturas PBR</h1>
+      
+      <!-- Editor container that holds the primary components: 3D preview and texture manager -->
+      <div class="editor">
+          
+          <!-- Core section of the editor containing 3D preview and texture management components -->
+          <div class="editor-section">
+              
+            <!-- 3D Preview Area: Displays a real-time render of the selected textures in a 3D model -->
+            <div class="preview-area" aria-label="Vista previa 3D de la textura">
+                  
+                  <!-- app contiene las options gui de la escena 3d  -->
+                  <div id="app"></div>
+                  
+                  <!-- Loading placeholder for the 3D view; dynamically updated once rendering completes -->
+                  <div class="preview-3d" aria-busy="true">Cargando vista 3D...</div>
+              
+              </div>
+              
+              <!-- Texture Manager: Allows the user to interact with and update PBR textures -->
+              <div class="texture-manager" aria-label="Gestor de Texturas PBR">
+                  
+                  <!-- Section Title: Labels the texture manager section for accessibility -->
+                  <h2 class="section-title">Texturas PBR</h2>
+
+                  <!-- Texture Component: Individual texture item for 'Albedo' map, which controls base color -->
+                  <div class="texture-item" role="listitem" aria-labelledby="texture-albedo">
+                    <!-- Preview de la textura 'Albedo' -->
+                    <div class="texture-image" aria-hidden="true"></div>
+                    <div class="texture-info">
+                        <!-- Nombre de la textura -->
+                        <p id="texture-albedo" class="texture-name">Albedo</p>
+                        <!-- Botones de edición y carga para la textura 'Albedo' -->
+                        <div class="edit-buttons">
+                            <button aria-label="Editar Albedo" class="btnControlsTexture btnEdition" id="editAlbedoBtn">
+                                <i class="fas fa-edit"></i> <span>Editar</span>
+                            </button>
+                            <button aria-label="Cargar Albedo" class="btnControlsTexture btnLoad" id="LoadAlbedoBtn">
+                                <i class="fas fa-upload"></i> <span>Cargar</span>
+                            </button>
+                            <input type="file" id="albedoFileInput" style="display: none;" accept="image/*">
+                        </div>
+                
+                        <!-- Formulario de edición específico para la textura 'Albedo' -->
+                        <div class="edit-form" id="editAlbedoForm">
+                            <!-- Selector de color -->
+                            <label for="albedo-color">Color Base:</label>
+                            <input type="color" id="albedo-color" value="#ffffff">
+                            
+                            <!-- Slider para ajustar la saturación -->
+                            <label for="albedo-saturation">Saturación:</label>
+                            <input type="range" id="albedo-saturation" min="0" max="1" step="0.01" value="1">
+                            
+                            <!-- Botones de confirmación y cancelación -->
+                            <div class="edit-actions">
+                                <button class="btnFormEdit confirm-btn" id="confirmAlbedoBtn">Confirmar</button>
+                                <button class="btnFormEdit cancel-btn" id="cancelAlbedoBtn">Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                
+
+                  <!-- Texture Component: Handles 'Normal' map, affecting surface detail in the 3D view -->
+                  <div class="texture-item" role="listitem" aria-labelledby="texture-normal">
+                      <div class="texture-image" aria-hidden="true"></div>
+                      <div class="texture-info">
+                          <p id="texture-normal" class="texture-name">Normal</p>
+                          <div class="edit-buttons">
+                              <button aria-label="Editar Normal" class="btnControlsTexture btnEdition" id="editNormalBtn" ><i class="fas fa-edit"></i> <span>Editar</span></button>
+                              <button aria-label="Cargar Normal" class="btnControlsTexture btnLoad" id="LoadNormalBtn" ><i class="fas fa-upload"></i> <span>Cargar</span></button>
+                              <input type="file" id="normalFileInput" style="display: none;" accept="image/*">
+                          </div>
+
+                         
+                          <!-- Contenedor del formulario de edición con transición suave -->
+                          <div class="edit-form" id="editNormalForm">
+                            <!-- Slider para ajustar la intensidad del mapa normal -->
+                            <label for="normal-intensity">Intensidad del Mapa Normal:</label>
+                            <input id="normal-intensity" type="range" min="0" max="2" step="0.1" value="1">
+                            
+                            <!-- Checkboxes para invertir ejes -->
+                            <label for="invert-x-axis">Invertir Eje X:</label>
+                            <input type="checkbox" id="invert-x-axis">
+                
+                            <label for="invert-y-axis">Invertir Eje Y:</label>
+                            <input type="checkbox" id="invert-y-axis">
+                            
+                            <!-- Botones de confirmación y cancelación -->
+                            <div class="edit-actions">
+                                <button class="btnFormEdit confirm-btn" id="confirmNormalBtn">Confirmar</button>
+                                <button class="btnFormEdit cancel-btn" id="cancelNormalBtn">Cancelar</button>
+                            </div>
+                        </div>
+
+                      </div>
+                  </div>
+
+                  <!-- Texture Component: Manages the 'Roughness' map, which influences surface reflectivity -->
+                  <div class="texture-item" role="listitem" aria-labelledby="texture-roughness">
+                      <div class="texture-image" aria-hidden="true"></div>
+                      <div class="texture-info">
+                          <p id="texture-roughness" class="texture-name">Roughness</p>
+                          <div class="edit-buttons">
+                              <button aria-label="Editar Roughness" class="btnControlsTexture btnEdition" id="editRoughnessBtn" ><i class="fas fa-edit"></i> <span>Editar</span></button>
+                              <button aria-label="Cargar Roughness" class="btnControlsTexture btnLoad" id="LoadRoughnessBtn" ><i class="fas fa-upload"></i> <span>Cargar</span></button>
+                              <input type="file" id="roughnessFileInput" style="display: none;" accept="image/*">
+                          </div>
+                          
+                          
+
+                          <!-- Contenedor del formulario de edición con transición suave -->
+                          <div class="edit-form" id="editRoughnessForm">
+                            <!-- Slider para ajustar el nivel de rugosidad -->
+                            <label for="roughness-level">Nivel de Rugosidad:</label>
+                            <input id="roughness-level" type="range" min="0" max="1" step="0.01" value="0.5">
+                            
+                            <!-- Botones de confirmación y cancelación -->
+                            <div class="edit-actions">
+                                <button class="btnFormEdit confirm-btn" id="confirmRoughnessBtn">Confirmar</button>
+                                <button class="btnFormEdit cancel-btn" id="cancelRoughnessBtn">Cancelar</button>
+                            </div>
+                        </div>
+
+                      </div>
+                  </div>
+
+                  <!-- Texture Component: 'Metalness' map editor, controlling metal-like reflection properties -->
+                  <div class="texture-item" role="listitem" aria-labelledby="texture-metalness">
+                      <div class="texture-image" aria-hidden="true"></div>
+                      <div class="texture-info">
+                          <p id="texture-metalness" class="texture-name">Metalness</p>
+                          <div class="edit-buttons">
+                              <button aria-label="Editar Metalness" class="btnControlsTexture btnEdition" id="editMetalnessBtn" ><i class="fas fa-edit"></i> <span>Editar</span></button>
+                              <button aria-label="Cargar Metalness" class="btnControlsTexture btnLoad" id="LoadMetalnessBtn" ><i class="fas fa-upload"></i> <span>Cargar</span></button>
+                              <input type="file" id="metalnessFileInput" style="display: none;" accept="image/*">
+                            </div>
+
+                         
+
+                          <!-- Contenedor del formulario de edición con transición suave -->
+                          <div class="edit-form" id="editMetalnessForm">
+                            <!-- Slider para ajustar el nivel de metalicidad -->
+                            <label for="metalness-level">Nivel de Metalicidad:</label>
+                            <input id="metalness-level" type="range" min="0" max="1" step="0.01" value="0.5">
+                            
+                            <!-- Botones de confirmación y cancelación -->
+                            <div class="edit-actions">
+                                <button class="btnFormEdit confirm-btn" id="confirmMetalnessBtn">Confirmar</button>
+                                <button class="btnFormEdit cancel-btn" id="cancelMetalnessBtn">Cancelar</button>
+                            </div>
+                        </div>
+
+
+                      </div>
+                  </div>
+
+                  <!-- Texture Component: Allows editing of 'Occlusion' map, enhancing shading and depth perception -->
+                  <div class="texture-item" role="listitem" aria-labelledby="texture-occlusion">
+                      <div class="texture-image" aria-hidden="true"></div>
+                      <div class="texture-info">
+                          <p id="texture-occlusion" class="texture-name">Occlusion</p>
+                          <div class="edit-buttons">
+                              <button aria-label="Editar Occlusion" class="btnControlsTexture btnEdition" id="editOcclusionBtn"  ><i class="fas fa-edit"></i> <span>Editar</span></button>
+                              <button aria-label="Cargar Occlusion" class="btnControlsTexture btnLoad" id="LoadOcclusionBtn" ><i class="fas fa-upload"></i> <span>Cargar</span></button>
+                              <input type="file" id="occlusionFileInput" style="display: none;" accept="image/*">
+                          </div>
+                           
+                          <!-- Contenedor del formulario de edición con transición suave -->
+                          <div class="edit-form" id="editOcclusionForm">
+                            <!-- Slider para ajustar la intensidad de oclusión -->
+                            <label for="occlusion-intensity">Intensidad de Oclusión:</label>
+                            <input id="occlusion-intensity" type="range" min="0" max="1" step="0.01" value="0.5">
+                            
+                            <!-- Botones de confirmación y cancelación -->
+                            <div class="edit-actions">
+                                <button class="btnFormEdit confirm-btn" id="confirmOcclusionBtn">Confirmar</button>
+                                <button class="btnFormEdit cancel-btn" id="cancelOcclusionBtn">Cancelar</button>
+                            </div>
+                        </div>
+
+
+                      </div>
+                  </div>
+
+                  <!-- Texture Component: 'Displacement' map editor, used to adjust surface height effects -->
+                  <div class="texture-item" role="listitem" aria-labelledby="texture-displacement">
+                    <div class="texture-image" aria-hidden="true"></div>
+                    <div class="texture-info">
+                      <p id="texture-displacement" class="texture-name">Displacement</p>
+                      <div class="edit-buttons">
+                        <button aria-label="Editar Displacement" class="btnControlsTexture btnEdition" id="editDisplacementBtn">
+                          <i class="fas fa-edit"></i> <span>Editar</span>
+                        </button>
+                        <button aria-label="Cargar Displacement" class="btnControlsTexture btnLoad" id="LoadDisplacementBtn">
+                          <i class="fas fa-upload"></i> <span>Cargar</span>
+                        </button>
+                        <input type="file" id="displacementFileInput" style="display: none;" accept="image/*">
+                      </div>
+                  
+                      <!-- Contenedor del formulario de edición con transición suave -->
+                      <div class="edit-form" id="editDisplacementForm">
+                        <!-- Slider para ajustar la altura o nivel de desplazamiento -->
+                        <label for="displacement-height">Altura/Nivel de Desplazamiento:</label>
+                        <input id="displacement-height" type="range" min="0" max="1" step="0.01" value="0.5">
+                        
+                        <!-- Botones de confirmación y cancelación -->
+                        <div class="edit-actions">
+                            <button class="btnFormEdit confirm-btn" id="confirmDisplacementBtn">Confirmar</button>
+                            <button class="btnFormEdit cancel-btn" id="cancelDisplacementBtn">Cancelar</button>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                  
+
+                  <!-- Texture Pack Selector: Dropdown to quickly apply a group of textures to the model -->
+                  <div class="texture-pack" aria-labelledby="texture-pack-label">
+                      <!-- Label for texture pack selection, providing context for screen readers -->
+                      <h3 id="texture-pack-label">Seleccionar Paquete de Texturas</h3>
+                      <!-- Dropdown options for texture packs; default options include wood, metal, etc. -->
+                      <select id="texture-pack-selector" aria-label="Seleccionar paquete de texturas">
+                      </select>
+
+                  </div>
+              </div>
+
+          </div>          
+      
+      </div>
+
+  </div>
+
+  <!-- Contenedor para el popup de imagen ampliada -->
+  <div id="image-popup" class="image-popup">
+    <div class="popup-content">
+        <button id="close-popup" class="close-popup" aria-label="Cerrar vista ampliada">&times;</button>
+        <img id="popup-image" class="popup-image" src="" alt="Vista ampliada de la textura">
+    </div>
+  </div>
+
+
+
+</body>
+
+<script src="./dat.gui.js"></script>
+<script type="module" src="/main.js"></script>
+</body>
 </html>

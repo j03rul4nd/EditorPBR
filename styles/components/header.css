@@ -1,0 +1,13 @@
+/* Estilos para el encabezado */
+#main-title {
+    font-size: 2em;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #555;
+    transition: color 0.3s ease;
+}
+
+#main-title:hover {
+    color: #007bff;
+}

@@ -1,0 +1,28 @@
+/* Diseño de estructura principal */
+
+div#app {
+    z-index: 9;
+    position: absolute;
+    display: flex;
+  }
+  
+
+.editor-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.preview-area, .texture-manager {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    flex: 1 1 45%;
+    position: relative;
+    transition: transform 0.2s ease;
+}
+
+.preview-area:hover, .texture-manager:hover {
+    transform: scale(1.02);
+}
