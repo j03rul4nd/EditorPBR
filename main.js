@@ -496,6 +496,17 @@ class Engine{
 
   uiListeners(){
     let _me = this;
+
+    _me.uiBtnEditForm();
+
+    _me.uiLoadFile();
+
+    _me.utilseditTexturesForm();
+
+  }
+
+  uiBtnEditForm(){
+    let _me = this;
     // Selección de todos los botones de edición y formulario de edición
     document.querySelectorAll('.btnEdition').forEach(editButton => {
       editButton.addEventListener('click', function () {
@@ -565,10 +576,10 @@ class Engine{
           }, 400);
       }
     });
+  }
 
-
-
-
+  uiLoadFile(){
+    let _me = this;
     // Escuchar clic en los botones "Cargar" para activar el input de archivo
     document.querySelectorAll('.btnLoad').forEach(button => {
       button.addEventListener('click', function () {
@@ -625,9 +636,206 @@ class Engine{
         }
       });
     });
+    
+  }
+
+  utilseditTexturesForm(){
+    let _me = this;
+    // Listener específico para el botón Confirmar de la textura Albedo
+    const confirmAlbedoBtn = document.getElementById('confirmAlbedoBtn');
+    if (confirmAlbedoBtn) {
+      confirmAlbedoBtn.addEventListener('click', function () {
+        // Obtener valores de color y saturación del formulario de edición de Albedo
+        const textureItem = this.closest('.texture-item');
+        const colorInput = textureItem.querySelector('#albedo-color');
+        const saturationInput = textureItem.querySelector('#albedo-saturation');
+
+        const baseColor = new THREE.Color(colorInput.value);
+        const saturation = parseFloat(saturationInput.value);
+
+        // Ajustar la saturación del color
+        const albedoColor = baseColor.clone().multiplyScalar(saturation);
+
+        // Aplicar el color a la textura Albedo en el material de THREE.js
+        if (_me.material.map) {
+          _me.material.color = albedoColor; // Modifica el color base del material
+          _me.material.needsUpdate = true;  // Asegura que los cambios se apliquen
+        }
+
+        // Ocultar el formulario de edición después de confirmar
+        const editForm = textureItem.querySelector('.edit-form');
+        editForm.classList.remove('edit-form-visible');
+
+        // Restaurar los botones de edición y carga
+        const editButton = textureItem.querySelector('.btnEdition');
+        const loadButton = textureItem.querySelector('.btnLoad');
+        const editButtonsContainer = textureItem.querySelector('.edit-buttons');
+        editButton.style.display = 'inline-block';
+        loadButton.style.display = 'inline-block';
+        editButtonsContainer.style.display = 'flex';
+      });
+    }
+
+    // Listener específico para el botón Confirmar de la textura Normal
+    const confirmNormalBtn = document.getElementById('confirmNormalBtn');
+    if (confirmNormalBtn) {
+      confirmNormalBtn.addEventListener('click', function () {
+        // Obtener valores del formulario de edición de Normal
+        const textureItem = this.closest('.texture-item');
+        const intensityInput = textureItem.querySelector('#normal-intensity');
+        const invertXAxis = textureItem.querySelector('#invert-x-axis').checked;
+        const invertYAxis = textureItem.querySelector('#invert-y-axis').checked;
+
+        // Ajustar intensidad del mapa normal
+        const intensity = parseFloat(intensityInput.value);
+
+        if (_me.material.normalMap) {
+          // Clonar y actualizar el normalScale del mapa normal
+          _me.material.normalScale.set(
+            intensity * (invertXAxis ? -1 : 1),
+            intensity * (invertYAxis ? -1 : 1)
+          );
+          _me.material.needsUpdate = true;  // Asegura que los cambios se apliquen
+        }
+
+        // Ocultar el formulario de edición después de confirmar
+        const editForm = textureItem.querySelector('.edit-form');
+        editForm.classList.remove('edit-form-visible');
+
+        // Restaurar los botones de edición y carga
+        const editButton = textureItem.querySelector('.btnEdition');
+        const loadButton = textureItem.querySelector('.btnLoad');
+        const editButtonsContainer = textureItem.querySelector('.edit-buttons');
+        editButton.style.display = 'inline-block';
+        loadButton.style.display = 'inline-block';
+        editButtonsContainer.style.display = 'flex';
+      });
+    }
+
+    // Listener específico para el botón Confirmar de la textura Roughness
+    const confirmRoughnessBtn = document.getElementById('confirmRoughnessBtn');
+    if (confirmRoughnessBtn) {
+      confirmRoughnessBtn.addEventListener('click', function () {
+        // Obtener valor del nivel de rugosidad desde el formulario de edición
+        const textureItem = this.closest('.texture-item');
+        const roughnessLevelInput = textureItem.querySelector('#roughness-level');
+
+        // Extraer el valor del slider y convertirlo a número
+        const roughnessLevel = parseFloat(roughnessLevelInput.value);
+
+        // Aplicar el nivel de rugosidad al material de THREE.js
+        if (_me.material) {
+          _me.material.roughness = roughnessLevel;
+          _me.material.needsUpdate = true;  // Asegura que los cambios se reflejen en el material
+        }
+
+        // Ocultar el formulario de edición después de confirmar
+        const editForm = textureItem.querySelector('.edit-form');
+        editForm.classList.remove('edit-form-visible');
+
+        // Restaurar los botones de edición y carga
+        const editButton = textureItem.querySelector('.btnEdition');
+        const loadButton = textureItem.querySelector('.btnLoad');
+        const editButtonsContainer = textureItem.querySelector('.edit-buttons');
+        editButton.style.display = 'inline-block';
+        loadButton.style.display = 'inline-block';
+        editButtonsContainer.style.display = 'flex';
+      });
+    }
+
+    // Listener específico para el botón Confirmar de la textura Metalness
+    const confirmMetalnessBtn = document.getElementById('confirmMetalnessBtn');
+    if (confirmMetalnessBtn) {
+      confirmMetalnessBtn.addEventListener('click', function () {
+        // Obtener valor del nivel de metalicidad desde el formulario de edición
+        const textureItem = this.closest('.texture-item');
+        const metalnessLevelInput = textureItem.querySelector('#metalness-level');
+
+        // Extraer el valor del slider y convertirlo a número
+        const metalnessLevel = parseFloat(metalnessLevelInput.value);
+
+        // Aplicar el nivel de metalicidad al material de THREE.js
+        if (_me.material) {
+          _me.material.metalness = metalnessLevel;
+          _me.material.needsUpdate = true;  // Asegura que los cambios se reflejen en el material
+        }
+
+        // Ocultar el formulario de edición después de confirmar
+        const editForm = textureItem.querySelector('.edit-form');
+        editForm.classList.remove('edit-form-visible');
+
+        // Restaurar los botones de edición y carga
+        const editButton = textureItem.querySelector('.btnEdition');
+        const loadButton = textureItem.querySelector('.btnLoad');
+        const editButtonsContainer = textureItem.querySelector('.edit-buttons');
+        editButton.style.display = 'inline-block';
+        loadButton.style.display = 'inline-block';
+        editButtonsContainer.style.display = 'flex';
+      });
+    }
 
 
+    // Listener específico para el botón Confirmar de la textura Occlusion
+    const confirmOcclusionBtn = document.getElementById('confirmOcclusionBtn');
+    if (confirmOcclusionBtn) {
+      confirmOcclusionBtn.addEventListener('click', function () {
+        // Obtener valor de la intensidad de oclusión desde el formulario de edición
+        const textureItem = this.closest('.texture-item');
+        const occlusionIntensityInput = textureItem.querySelector('#occlusion-intensity');
 
+        // Extraer el valor del slider y convertirlo a número
+        const occlusionIntensity = parseFloat(occlusionIntensityInput.value);
+
+        // Aplicar la intensidad de oclusión al material de THREE.js
+        if (_me.material.aoMap) {
+          _me.material.aoMapIntensity = occlusionIntensity;
+          _me.material.needsUpdate = true;  // Asegura que los cambios se reflejen en el material
+        }
+
+        // Ocultar el formulario de edición después de confirmar
+        const editForm = textureItem.querySelector('.edit-form');
+        editForm.classList.remove('edit-form-visible');
+
+        // Restaurar los botones de edición y carga
+        const editButton = textureItem.querySelector('.btnEdition');
+        const loadButton = textureItem.querySelector('.btnLoad');
+        const editButtonsContainer = textureItem.querySelector('.edit-buttons');
+        editButton.style.display = 'inline-block';
+        loadButton.style.display = 'inline-block';
+        editButtonsContainer.style.display = 'flex';
+      });
+    }
+
+    // Listener específico para el botón Confirmar de la textura Displacement
+    const confirmDisplacementBtn = document.getElementById('confirmDisplacementBtn');
+    if (confirmDisplacementBtn) {
+      confirmDisplacementBtn.addEventListener('click', function () {
+        // Obtener valor del nivel de desplazamiento desde el formulario de edición
+        const textureItem = this.closest('.texture-item');
+        const displacementHeightInput = textureItem.querySelector('#displacement-height');
+
+        // Extraer el valor del slider y convertirlo a número
+        const displacementHeight = parseFloat(displacementHeightInput.value);
+
+        // Aplicar el nivel de desplazamiento al material de THREE.js
+        if (_me.material.displacementMap) {
+          _me.material.displacementScale = displacementHeight;
+          _me.material.needsUpdate = true;  // Asegura que los cambios se reflejen en el material
+        }
+
+        // Ocultar el formulario de edición después de confirmar
+        const editForm = textureItem.querySelector('.edit-form');
+        editForm.classList.remove('edit-form-visible');
+
+        // Restaurar los botones de edición y carga
+        const editButton = textureItem.querySelector('.btnEdition');
+        const loadButton = textureItem.querySelector('.btnLoad');
+        const editButtonsContainer = textureItem.querySelector('.edit-buttons');
+        editButton.style.display = 'inline-block';
+        loadButton.style.display = 'inline-block';
+        editButtonsContainer.style.display = 'flex';
+      });
+    }
   }
 
   bgCreate(){
