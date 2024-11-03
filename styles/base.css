@@ -1,4 +1,8 @@
 body {
+
+    font-family: 'Rebond Grotesque', sans-serif;
+    font-weight: 400;
+    
     display: flex;
     justify-content: center;
     align-items: center;
@@ -7,6 +11,11 @@ body {
     color: #333;
     padding: 20px;
     flex-direction: column;
+}
+
+html {
+    font-size: 16px; /* Base para utilizar rem; se adapta mejor al zoom */
+    scroll-behavior: smooth; /* Mejor experiencia de navegación */
 }
 
 .container {

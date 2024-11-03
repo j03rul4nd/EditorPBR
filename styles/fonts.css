@@ -1,0 +1,27 @@
+
+@font-face {
+    font-family: 'Rebond Grotesque';
+    src: url('/fonts/ESRebondGrotesque-Regular.woff2') format('woff2'),
+         url('/fonts/ESRebondGrotesque-Regular.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  @font-face {
+    font-family: 'Rebond Grotesque';
+    src: url('/fonts/ESRebondGrotesque-Bold.woff2') format('woff2'),
+         url('/fonts/ESRebondGrotesque-Bold.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  @font-face {
+    font-family: 'Rebond Grotesque';
+    src: url('/fonts/ESRebondGrotesque-Italic.woff2') format('woff2'),
+         url('/fonts/ESRebondGrotesque-Italic.otf') format('opentype');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+  }
