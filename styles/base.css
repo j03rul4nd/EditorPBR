@@ -6,6 +6,7 @@ body {
     min-height: 100vh;
     color: #333;
     padding: 20px;
+    flex-direction: column;
 }
 
 .container {
