@@ -93,11 +93,30 @@ class Engine{
 
   updateTexturePack(packKey) {
     // Carga el nuevo pack de texturas y actualiza la malla y la vista previa
-    const newMaterial = this.loadTexturePack(packKey);
-    if (this.mesh && newMaterial) {
-      this.mesh.material.dispose(); // Libera el material anterior para evitar fugas de memoria
-      this.mesh.material = newMaterial; // Actualiza el material de la malla
+    // const newMaterial = this.loadTexturePack(packKey);
+    // if (this.mesh && newMaterial) {
+    //   this.mesh.material.dispose(); // Libera el material anterior para evitar fugas de memoria
+    //   this.mesh.material = newMaterial; // Actualiza el material de la malla
+    // }
+
+    const pack = this.texturePacks[packKey];
+      
+    if (!pack) {
+      console.error(`El pack de texturas "${packKey}" no está definido.`);
+      return;
     }
+  
+    // Asignar texturas al material existente sin crear uno nuevo
+    this.mesh.material.map = this.textureLoader.load(pack.albedoMap);
+    this.mesh.material.aoMap = this.textureLoader.load(pack.aoMap);
+    this.mesh.material.displacementMap = this.textureLoader.load(pack.heightMap);
+    this.mesh.material.normalMap = this.textureLoader.load(pack.normalMap);
+    this.mesh.material.metalnessMap = this.textureLoader.load(pack.metalnessMap);
+    this.mesh.material.roughnessMap = this.textureLoader.load(pack.roughnessMap);
+  
+    // Asegurar que los cambios de textura se actualicen en el renderizado
+    this.mesh.material.needsUpdate = true;    
+
   }
 
   setupTexturePackSelector() {
@@ -357,7 +376,40 @@ class Engine{
     const materialFolder = gui.addFolder('Material');
     materialFolder.add(this.material, 'roughness', 0, 1, 0.01).name('Rugosidad');
     materialFolder.add(this.material, 'metalness', 0, 1, 0.01).name('Metalicidad');
-    materialFolder.add(this.material, 'displacementScale', 0, 1, 0.01).name('Desplazamiento');
+    
+    materialFolder.add(this.material, 'displacementScale', 0, 1, 0.01)
+    .name('Desplazamiento')
+    .onChange((newDisplacementValue) => {
+      // Verifica si el mesh y el material están definidos
+      if (this.mesh && this.mesh.material) {
+        // Imprime un mensaje detallado sobre el cambio en desplazamiento
+        console.log(`\n==== Cambio en Desplazamiento ====\n`);
+        console.log(`Pack de Texturas Seleccionado: ${this.selectedTexturePack}`);
+        console.log(`Valor de Desplazamiento Actualizado a: ${newDisplacementValue}`);
+        console.log(`Material Asignado Actualmente al Mesh:\n`);
+  
+        // Log detallado del material
+        const material = this.mesh.material;
+        console.log(`Tipo de Material: ${material.type}`);
+        console.log(`Textura Albedo: ${material.map ? material.map.image.src : 'No asignada'}`);
+        console.log(`Mapa de Oclusión Ambiental: ${material.aoMap ? material.aoMap.image.src : 'No asignado'}`);
+        console.log(`Mapa de Desplazamiento: ${material.displacementMap ? material.displacementMap.image.src : 'No asignado'}`);
+        console.log(`Mapa de Normales: ${material.normalMap ? material.normalMap.image.src : 'No asignado'}`);
+        console.log(`Mapa de Metalicidad: ${material.metalnessMap ? material.metalnessMap.image.src : 'No asignado'}`);
+        console.log(`Mapa de Rugosidad: ${material.roughnessMap ? material.roughnessMap.image.src : 'No asignado'}`);
+        
+        console.log(`\nPropiedades Adicionales del Material:`);
+        console.log(`Metallicidad: ${material.metalness}`);
+        console.log(`Rugosidad: ${material.roughness}`);
+        console.log(`Intensidad del Mapa de Entorno: ${material.envMapIntensity}`);
+        console.log(`Wireframe Activado: ${material.wireframe ? 'Sí' : 'No'}`);
+        console.log(`\n==== Fin del Log ====\n`);
+      } else {
+        console.warn("No se encontró un material asignado a la malla o el mesh no está definido.");
+      }
+    });
+
+
     materialFolder.add(this.material, 'envMapIntensity', 0, 3, 0.1).name('Intensidad EnvMap');
 
     // Opción para cambiar el color del mesh
