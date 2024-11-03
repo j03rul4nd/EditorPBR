@@ -4,7 +4,7 @@
 
 ## Description
 **PBR Texture Editor and Viewer** is a web application that enables users to edit and visualize Physically-Based Rendering (PBR) textures in real-time on a 3D model. This tool is designed to streamline the process of reviewing and adjusting textures without the need for complex 3D software like Blender.
-![App Screenshot](https://editorpbr.vercel.app/cover.JPG)
+![App Screenshot v2](https://editorpbr.vercel.app/cover.JPG)
 
 ## Features
 - **Real-Time 3D Preview**: Visualize texture changes instantly on a 3D model.
