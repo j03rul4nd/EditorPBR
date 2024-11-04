@@ -46,10 +46,12 @@
     border-radius: 4px;
     animation: skeleton 1.5s infinite linear;
     transition: background 0.3s ease;
+    cursor: pointer;
 }
 
 .texture-image:hover {
     background: #d0d0d0;
+    transform: scale(1.05);
 }
 
 .texture-info {
@@ -248,3 +250,19 @@
     border-radius: 50%;
 }
 
+
+.btnControlsTexture.btnGenerate {
+    background: #28a745;
+    color: #fff;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    margin-left: 10px;
+}
+
+.btnControlsTexture.btnGenerate:hover {
+    background: #218838;
+    transform: scale(1.05);
+}

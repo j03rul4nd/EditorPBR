@@ -376,7 +376,7 @@ class Engine{
     const materialFolder = gui.addFolder('Material');
     materialFolder.add(this.material, 'roughness', 0, 1, 0.01).name('Rugosidad');
     materialFolder.add(this.material, 'metalness', 0, 1, 0.01).name('Metalicidad');
-    
+
     materialFolder.add(this.material, 'displacementScale', 0, 1, 0.01)
     .name('Desplazamiento')
     .onChange((newDisplacementValue) => {
@@ -555,6 +555,8 @@ class Engine{
 
     _me.utilseditTexturesForm();
 
+    _me.uiPopUpGeneratorNormlaPBR();
+
   }
 
   uiBtnEditForm(){
@@ -642,7 +644,7 @@ class Engine{
     });
 
     // Manejar el cambio en el input de archivo
-    document.querySelectorAll('input[type="file"]').forEach(input => {
+    document.querySelectorAll('.editor input[type="file"]').forEach(input => {
       input.addEventListener('change', function (event) {
         const file = event.target.files[0];
         if (file) {
@@ -968,6 +970,189 @@ class Engine{
 
       animateBg();
   }
+
+  firstRenderNormalized = true;
+  uiPopUpGeneratorNormlaPBR(){
+    let _me = this;
+    document.getElementById('generateTextureBtn').addEventListener('click', function () {
+      if(_me.firstRenderNormalized){
+        _me.generateSceneNormalTexture();
+        _me.firstRenderNormalized = false;
+      }
+        document.getElementById('generatePopup').classList.add('show');
+    });
+    
+    document.getElementById('closeGeneratePopup').addEventListener('click', function () {
+        document.getElementById('generatePopup').classList.remove('show');
+    });
+    
+    // Añadir el evento de carga de imagen al input de archivo
+    document.getElementById('inputImage').addEventListener('change', function () {
+        const inputImage = this.files[0];
+        if (inputImage) {
+            console.log('Image file received:', inputImage);
+            _me.loadImageNormalgenerate(inputImage);
+        } else {
+            alert('Please upload an image first.');
+        }
+    });
+
+    // Maneja la generación de la textura cuando el botón "Generate" es presionado
+    document.getElementById('generateBtn').addEventListener('click', function () {
+        document.getElementById('inputImage').click();     
+    });
+
+  }
+  loadImageNormalgenerate(inputImage){
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.src = e.target.result;
+      img.onload = () => {
+        const texture = new THREE.Texture(img);
+        texture.needsUpdate = true;
+        texture.minFilter = THREE.LinearFilter;
+        this.uniformsNormalTexture.uTexture.value = texture;
+        this.rendererNormalTexture.render(this.sceneNormalTexture, this.cameraNormalTexture);
+      };
+    };
+    reader.readAsDataURL(inputImage);
+  }
+
+  generateSceneNormalTexture() {
+    let _me = this;
+    let sectioncanvas = document.getElementById('canvasGeneratePopUpNormal');
+
+    // Fijar dimensiones del contenedor
+    sectioncanvas.style.width = '400px';
+    sectioncanvas.style.height = '400px';
+
+    // Configuración de la escena básica
+    this.sceneNormalTexture = new THREE.Scene();
+    this.cameraNormalTexture = new THREE.PerspectiveCamera(
+        75,
+        400 / 400, // Aspect ratio fijo de 1:1
+        0.1,
+        1000
+    );
+    this.rendererNormalTexture = new THREE.WebGLRenderer({ antialias: true });
+    this.rendererNormalTexture.setSize(400, 400); // Tamaño fijo de 400px x 400px
+    sectioncanvas.appendChild(this.rendererNormalTexture.domElement);
+
+    this.cameraNormalTexture.position.z = 2;
+    const controls = new OrbitControls(this.cameraNormalTexture, this.rendererNormalTexture.domElement);
+
+    // Material del shader con sus propiedades
+    const vertexShader = ` 
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `;
+    const fragmentShader = `
+      uniform sampler2D uTexture;
+      uniform float uStrength;
+      uniform float uBias; // Control del sesgo
+      uniform float uInvertR; // Control para invertir el canal rojo
+      uniform float uInvertG; // Control para invertir el canal verde
+      varying vec2 vUv;
+
+      void main() {
+        vec3 color = texture2D(uTexture, vUv).rgb;
+        float gray = dot(color, vec3(0.299, 0.587, 0.114)); // Convertir a escala de grises
+
+        // Calcular derivadas en el espacio de la textura
+        float dx = dFdx(gray);
+        float dy = dFdy(gray);
+
+        // Calcular la normal en el espacio de la textura y aplicar inversión de canales
+        vec3 normal = normalize(vec3(
+          -dx * uStrength * (uInvertR > 0.5 ? -1.0 : 1.0), 
+          -dy * uStrength * (uInvertG > 0.5 ? -1.0 : 1.0), 
+          1.0 - (uBias / 100.0)
+        ));
+
+        // Mapear de [-1,1] a [0,1] para el color
+        gl_FragColor = vec4(0.5 * normal + 0.5, 1.0);
+      }
+    `;
+
+    this.uniformsNormalTexture = {
+        uTexture: { value: new THREE.Texture() },
+        uStrength: { value: 1.0 },
+        uBias: { value: 50.0 },
+        uInvertR: { value: 0.0 },
+        uInvertG: { value: 0.0 }
+    };
+
+    const material = new THREE.ShaderMaterial({
+        uniforms: this.uniformsNormalTexture,
+        vertexShader: vertexShader,
+        fragmentShader: fragmentShader
+    });
+
+    const geometry = new THREE.PlaneGeometry(2, 2);
+    const plane = new THREE.Mesh(geometry, material);
+    this.sceneNormalTexture.add(plane);
+
+    // Configuración de la GUI
+    const gui = new dat.GUI();//guiContainerNormal
+    const guiContainer = document.getElementById('guiContainerNormal');
+    guiContainer.appendChild(gui.domElement);
+
+    const params = {
+        strength: this.uniformsNormalTexture.uStrength.value,
+        bias: this.uniformsNormalTexture.uBias.value,
+        invertR: false,
+        invertG: false,
+        refresh: () => _me.rendererNormalTexture.render(_me.sceneNormalTexture, _me.cameraNormalTexture),
+        save: function () {
+            _me.rendererNormalTexture.render(_me.sceneNormalTexture, _me.cameraNormalTexture);
+            const tempCanvas = document.createElement('canvas');
+            const tempContext = tempCanvas.getContext('2d');
+            tempCanvas.width = 400;
+            tempCanvas.height = 400;
+            tempContext.drawImage(_me.rendererNormalTexture.domElement, 0, 0, 400, 400);
+            const dataURL = tempCanvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.href = dataURL;
+            link.download = 'normal_texture.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    };
+
+    gui.add(params, 'strength', 0.1, 5.0).step(0.1).name('Normal Strength').onChange(value => {
+        _me.uniformsNormalTexture.uStrength.value = value;
+    });
+
+    gui.add(params, 'bias', 0, 100).step(1).name('Bias').onChange(value => {
+        _me.uniformsNormalTexture.uBias.value = value;
+    });
+
+    gui.add(params, 'invertR').name('Invert R').onChange(value => {
+        _me.uniformsNormalTexture.uInvertR.value = value ? 1.0 : 0.0;
+    });
+
+    gui.add(params, 'invertG').name('Invert G').onChange(value => {
+        _me.uniformsNormalTexture.uInvertG.value = value ? 1.0 : 0.0;
+    });
+
+    gui.add(params, 'save').name('Download Image');
+
+    // Loop de animación
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        _me.rendererNormalTexture.render(_me.sceneNormalTexture, _me.cameraNormalTexture);
+    }
+    animate();
+}
+
+
+
 
 }
 

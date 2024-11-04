@@ -59,3 +59,44 @@
   .close-popup:hover {
     background: rgba(255, 255, 255, 0.2);
   }
+
+
+  #generatePopup .popup-content {
+    /* background: #ffffff; */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    color: white;
+    flex-wrap: nowrap;
+    /* height: 250px; */
+}
+
+div#sectionGeneratePBRcontentPopPup {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    height: 100%;
+    width: 100%;
+    gap: 1rem;
+}
+
+#canvasGeneratePopUpNormal {
+    width: 400px;
+    height: 400px;
+    background: red;
+    display: flex;
+}
+#canvasGeneratePopUpNormal canvas {
+    display: flex;
+    width: 400px;
+    height: 400px;
+}
+
+div#guiContainerNormal {
+    display: flex;
+    position: absolute;
+    z-index: 99;
+    pointer-events: all;
+}

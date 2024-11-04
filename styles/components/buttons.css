@@ -53,7 +53,28 @@
     transition: background 0.3s, transform 0.2s;
   }
   
-  .confirm-btn:hover, .cancel-btn:hover {
+
+  .cancel-btn {
+    background: #ffffff00;
+    border: 3px solid #007bff;
+    color: #007bff;
+    /* border: none; */
+    font-weight: bold;
+    padding: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+
+  .confirm-btn:hover {
     background: #0056b3;
     transform: scale(1.05);
   }
+  
+  .cancel-btn:hover {
+    border-color: #0056b3;
+    color: #0056b3;
+    transform: scale(1.05);
+}
+  

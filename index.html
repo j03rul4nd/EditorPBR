@@ -103,6 +103,8 @@
                             <i class="fas fa-upload"></i> <span>Load</span>
                         </button>
                         <input type="file" id="albedoFileInput" style="display: none;" accept="image/*">
+
+                      
                     </div>
             
                     <!-- Specific edit form for 'Albedo' texture -->
@@ -118,8 +120,9 @@
                         <!-- Confirmation and cancel buttons -->
                         <div class="edit-actions">
                             <button class="btnFormEdit confirm-btn" id="confirmAlbedoBtn">Confirm</button>
-                            <button class="btnFormEdit cancel-btn" id="cancelAlbedoBtn">Cancel</button>
-                        </div>
+                            <button class="btnFormEdit cancel-btn" id="cancelAlbedoBtn">Cancel</button>                          
+                        </div>                      
+
                     </div>
                 </div>
               </div>
@@ -134,8 +137,13 @@
                           <button aria-label="Edit Normal" class="btnControlsTexture btnEdition" id="editNormalBtn"><i class="fas fa-edit"></i> <span>Edit</span></button>
                           <button aria-label="Load Normal" class="btnControlsTexture btnLoad" id="LoadNormalBtn"><i class="fas fa-upload"></i> <span>Load</span></button>
                           <input type="file" id="normalFileInput" style="display: none;" accept="image/*">
-                      </div>
 
+                            <!-- Botón para abrir el popup de generación -->
+                            <button class="btnControlsTexture btnGenerate" id="generateTextureBtn">
+                              <i class="fas fa-magic"></i> <span>Generate</span>
+                            </button>
+
+                      </div>
                      
                       <!-- Edit form container with smooth transition -->
                       <div class="edit-form" id="editNormalForm">
@@ -296,6 +304,22 @@
 
 </div>
 
+<!-- Popup para la generación de la textura -->
+<div class="image-popup" id="generatePopup">
+  <div class="popup-content">
+      <!-- Botón de cierre -->
+      <div class="close-popup" id="closeGeneratePopup">&times;</div>
+      <div id="sectionGeneratePBRcontentPopPup">
+          <h3>Generate PBR Normal Map</h3>
+          <p>Upload an image to generate a PBR normal map:</p>
+          <input type="file" id="inputImage" accept="image/*" style="display: none;">          
+          <button class="confirm-btn" id="generateBtn">Generate Texture Image</button>
+          <div id="canvasGeneratePopUpNormal">
+            <div id="guiContainerNormal"></div>
+          </div>
+      </div>
+  </div>
+</div>
 
   <!-- Contenedor para el popup de imagen ampliada -->
   <div id="image-popup" class="image-popup">
